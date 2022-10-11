@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Pedidos completos</title>
+		
+	</head>
+	<body>
+		<main>
+		<h1>Cadastre um novo pediodo: </h1>
+			<form method="post" action="pedidos_completo.php">
+    
+            <?php
+
+                echo"<br><br>";
+				echo"<label for='Quanidade'>digite a quantidade</label>";
+				echo"<input type='text' id='Peso' name='QUANTIDADE' />";
+
+                echo"<br><br>";
+				echo"<label for='valor'>digite o valor</label>";
+				echo"<input type='text' id='Valor' name='VALOR' />";
+
+
+            ?>
+
+            <br><br>Pedido:
+				<br><br>
+				<select name="PEDIDOS">
+					
+					<?php   
+	 
+					$servername = "localhost";
+					$database = "vendas_01";
+					$username = "root";
+					$password = "";
+	 
+					$conn = mysqli_connect($servername, $username, $password, $database);
+					if(!$conn){
+						die("falha na conexÃ£o: ". mysqli_connect_error());
+					}
+	 
+					$sql = "SELECT * FROM cadastro_de_pedido";
+	 
+					$resultado = mysqli_query($conn,$sql) or die("Erro ao retornar os dados");
+	 
+					while( $registro = mysqli_fetch_array($resultado))
+					{
+						$idcad_ped = $registro['idcad_ped'];
+						$idcad_ped = $registro['idcad_ped'];
+		
+						echo "<option value='$idcad_ped '>$idcad_ped</option>";
+	 
+					}
+					mysqli_close($conn);
+					?>
+	 
+				</select>
+				<br><br>
+
+
+				<h1>itens do pedido</h1>
+
+			<br><br>Produto:
+				<br><br>
+				<select name="PRODUTO">
+					
+					<?php   
+	 
+					$servername = "localhost";
+					$database = "vendas_01";
+					$username = "root";
+					$password = "";
+	 
+					$conn = mysqli_connect($servername, $username, $password, $database);
+					if(!$conn){
+						die("falha na conexÃ£o: ". mysqli_connect_error());
+					}
+	 
+					$sql = "SELECT * FROM cadastro_de_produto ";
+	 
+					$resultado = mysqli_query($conn,$sql) or die("Erro ao retornar os dados");
+	                
+					while( $registro = mysqli_fetch_array($resultado))
+					{
+						$idcad_prod  = $registro['idcad_prod'];
+						$prod_nome = $registro['prod_nome'];
+		
+						echo "<option value='$idcad_prod'>$prod_nome</option>";
+	 
+					}
+					mysqli_close($conn);
+					?>
+	 
+				</select>
+				<br><br>
+                <input type="submit" value="Enviar " class="enviar">
+				
+            </form>
+			<br><br>
+				<form method="post" action="pedidos_completo.php">
+				<input type="submit" value="Voltar ao inicio">
+        </main>
+    </body>
+</html>
+
+
+<h1>Resultado do cadastro: </h1>
+
+<?php
+
+$servername = "localhost";
+$database = "vendas_01";
+$username = "root";
+$password = "";
+$id_pedido = $_POST['PEDIDOS'];
+$id_produto = $_POST['PRODUTO'];
+$quantidade = $_POST['QUANTIDADE'];
+$valor = $_POST['VALOR'];
+
+//cria conexao
+$conn = mysqli_connect($servername, $username, $password, $database);
+
+//verifica conexao
+if(!$conn){
+    die("falha de conexao: ". mysqli_connect_error ());
+
+}
+
+//echo "conectado com suscesso";
+
+//inserir atributos
+$sql = " INSERT INTO  itens_pedido (
+                                        id_itens_pedido, 
+                                        id_pedido,
+                                        id_produto, 
+                                        quantidade, 
+                                        valor ) 
+                                        
+                    VALUES (
+                            '',
+                            '$id_pedido',
+                            '$id_produto',
+                            '$quantidade',
+                            '$valor' )";
+
+
+if(mysqli_query($conn, $sql)){
+    //echo "<br>registro gravado com sucesso";
+
+}
+else{
+    echo "error: ".$sql. "<br>". mysqli_error($conn);
+
+}
+
+
+mysqli_close($conn);
+?>
+
+
+
+<body> <html> <head>
+ <title>Resultado da pesquisa</title>
+ </head> </body>
+
+ <table border="1" style='width:50%'>
+ <tr> <th>ID</th> <th>ID pedido</th> <th>ID produto</th> <th>QUANTIDADE</th> <VALOR> </tr>
+
+<?php
+$servername = "localhost";
+$database = "vendas_01";
+$username = "root";
+$password = "";
+
+$campo=["id_itens_pedido", "id_pedido", "id_produto", 
+        "quantidade", "valor" ];
+$i=0;
+$sequencia="";
+$comando="";
+
+// Cria ConexÃ£o
+$conn = mysqli_connect($servername, $username, 
+                       $password, $database);
+// Verificar ConexÃ£o
+if (!$conn) {
+      die("falha na conexÃ£o: " . mysqli_connect_error());
+}
+ 
+// echo "<br>Conectado com sucesso<br>";
+
+if ($comando <> "")
+     $sql = "SELECT * FROM itens_pedido where $comando";   
+else
+    $sql = "SELECT * FROM itens_pedido";     
+
+$resultado = mysqli_query($conn,$sql) or die("Erro ao retornar dados");
+ 
+ // loop para ler todos os registros
+ while ($registro = mysqli_fetch_array($resultado))
+ {
+   $id_itens_pedido       = $registro['id_itens_pedido'];
+   $id_pedido     = $registro['id_pedido'];
+   $id_produto = $registro['id_produto'];
+   $quantidade  = $registro['quantidade'];
+   $valor   = $registro['valor'];
+ 
+   echo "<tr>";
+   echo "<td>".$id_itens_pedido."</td>";
+   echo "<td>".$id_pedido."</td>";
+   echo "<td>".$id_produto."</td>";
+   echo "<td>".$quantidade."</td>";
+   echo "<td>".$valor."</td>";
+   echo "<td>
+         <form action='pedidos_completo.php' method='post'>
+         <center> 
+         <input type='hidden' name='dado' value=".$id_itens_pedido.">
+         <input type=submit value='Deletar' ></form>";
+
+    echo "<td>
+            <form action='pedidos_completo.php' method='post'>
+            <center> 
+            <input type='hidden' name='dado' value=".$id_itens_pedido.">
+            <input type=submit value='Alterar' ></form>";
+    echo"</tr>";
+    }
+
+
+
+mysqli_close($conn);
+echo"</table>";
+?>
+</body>
+</html>
+
+<html>
+    <body>
+        <br><br>
+        <form method="post" action="produto_home.html">
+        <input type="submit" value="Voltar uma pagina">    
+    </body>
+</html>

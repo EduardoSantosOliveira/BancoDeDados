@@ -1,0 +1,2 @@
+NOME:EDU
+IDADE:16
